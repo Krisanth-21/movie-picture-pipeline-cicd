@@ -48,35 +48,59 @@ Four distinct workflow files are implemented under [`.github/workflows/`](.githu
 
 ## 📸 Live Deployment Verification & Screenshots
 
-All 4 deployment verification proofs required by the Udacity project rubric are documented below and located in the [`screenshots/`](screenshots/) directory:
+All verification proofs required by the Udacity project review are documented below and located in the [`screenshots/`](screenshots/) directory:
 
-### 1. Backend Continuous Deployment Pipeline (All Green)
+### 1. Frontend Continuous Integration Pipeline (All Green)
 * **Status:** Passed ✅
-* **Workflow:** `Backend Continuous Deployment`
+* **Workflow:** `Frontend Continuous Integration` ([Run #34341158696](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34341158696))
+* **Output:** Successfully executed all required jobs:
+  * `Lint Frontend` (parallel)
+  * `Test Frontend` (parallel)
+  * `Build Frontend Docker Image` (runs only after lint & test; includes Node 18 setup, npm cache restore, `npm ci`, test execution, and Docker build)
+
+![Frontend Continuous Integration Pipeline](screenshots/Frontend_CI_Pipeline.png)
+
+---
+
+### 2. Backend Continuous Integration Pipeline (All Green)
+* **Status:** Passed ✅
+* **Workflow:** `Backend Continuous Integration` ([Run #34341160965](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34341160965))
+* **Output:** Successfully executed all required jobs:
+  * `Lint Backend` (parallel)
+  * `Test Backend` (parallel)
+  * `Build Backend Docker Image` (runs only after lint & test)
+
+![Backend Continuous Integration Pipeline](screenshots/Backend_CI_Pipeline.png)
+
+---
+
+### 3. Backend Continuous Deployment Pipeline (All Green)
+* **Status:** Passed ✅
+* **Workflow:** `Backend Continuous Deployment` ([Run #34339992897](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34339992897))
 * **Output:** Successfully ran all 4 pipeline stages in sequence:
-  * `Lint Backend` (48s)
-  * `Test Backend` (45s)
-  * `Build & Push Backend Image` to Amazon ECR (1m 7s)
-  * `Deploy Backend to EKS` (48s)
+  * `Lint Backend`
+  * `Test Backend`
+  * `Build & Push Backend Image` to Amazon ECR
+  * `Deploy Backend to EKS` (automated deployment using Kustomize and Kubectl with automated rollout verification)
 
 ![Backend Continuous Deployment Pipeline](screenshots/Backend_CD_Pipeline.png)
 
 ---
 
-### 2. Frontend Continuous Deployment Pipeline (All Green)
+### 4. Frontend Continuous Deployment Pipeline (All Green)
 * **Status:** Passed ✅
-* **Workflow:** `Frontend Continuous Deployment`
+* **Workflow:** `Frontend Continuous Deployment` ([Run #34340239839](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34340239839))
 * **Output:** Successfully ran all 4 pipeline stages in sequence:
   * `Lint Frontend`
   * `Test Frontend`
   * `Build & Push Frontend Image` with `REACT_APP_MOVIE_API_URL` build argument to Amazon ECR
-  * `Deploy Frontend to EKS` via Kustomize and Kubectl
+  * `Deploy Frontend to EKS` via Kustomize and Kubectl with automated rollout verification
 
 ![Frontend Continuous Deployment Pipeline](screenshots/Frontend_CD_Pipeline.png)
 
 ---
 
-### 3. Live Backend API Response
+### 5. Live Backend API Response
 * **Status:** Live & Healthy ✅
 * **Endpoint:** `http://a5bbec62a817247eb8dbb5a89cc9d340-503850289.us-east-1.elb.amazonaws.com/movies`
 * **Output:** The Python/Flask container running inside the AWS EKS cluster successfully responds with the movie catalog in JSON format:
@@ -89,7 +113,7 @@ All 4 deployment verification proofs required by the Udacity project rubric are 
 
 ---
 
-### 4. Live Frontend Web Application
+### 6. Live Frontend Web Application
 * **Status:** Live & Healthy ✅
 * **Endpoint:** `http://ad123b6ef430d4fccae7ffe1c98d0bc4-43942732.us-east-1.elb.amazonaws.com`
 * **Output:** The React container running inside the AWS EKS cluster renders the **"Movie List"** web page, dynamically pulling and displaying the catalog from the backend API:
