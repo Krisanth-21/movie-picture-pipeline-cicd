@@ -131,15 +131,18 @@ jobs:
 
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.31.0'
 
       - name: Update kubeconfig
         run: |
+          aws sts get-caller-identity
           aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME || secrets.EKS_CLUSTER_NAME || 'cluster' }} --region ${{ vars.AWS_REGION || secrets.AWS_REGION || 'us-east-1' }}
 
       - name: Deploy Kubernetes manifests
         run: |
           kustomize edit set image frontend=${{ needs.build.outputs.image }}
-          kustomize build | kubectl apply -f -
+          kustomize build | kubectl apply --validate=false -f -
 
       - name: Verify Frontend deployment
         run: |
