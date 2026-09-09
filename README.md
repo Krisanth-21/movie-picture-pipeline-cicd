@@ -1,10 +1,10 @@
 # Movie Picture Pipeline — CI/CD Automation
 
-This project automates the testing, containerization, and continuous deployment of the **Movie Picture Pipeline** web application using **GitHub Actions**, **Docker**, and **Amazon Web Services (AWS)** including **Amazon ECR** and **Amazon Elastic Kubernetes Service (EKS)**.
+This project automates the testing, containerization, and continuous deployment of the **Movie Picture Pipeline** web application using **GitHub Actions**, **Docker**, and **Amazon Web Services (AWS)**.
 
 ---
 
-## 📌 Project Overview & Architecture
+## Project Overview & Architecture
 
 The application consists of two main microservices:
 1. **Frontend Web UI:** Written in JavaScript / TypeScript using React, running on Node.js 18.
@@ -33,25 +33,25 @@ graph LR
 
 ---
 
-## 🚀 GitHub Actions Workflows
+## GitHub Actions Workflows
 
 Four distinct workflow files are implemented under [`.github/workflows/`](.github/workflows/):
 
 | Workflow Name | File | Trigger | Functionality |
 | :--- | :--- | :--- | :--- |
-| **Frontend Continuous Integration** | [`frontend-ci.yaml`](.github/workflows/frontend-ci.yaml) | `pull_request` on `main` (`starter/frontend/**`), `workflow_dispatch` | Node 18 setup with npm caching; parallel linting (`npm run lint`) & tests (`CI=true npm test`); build job sets up Node 18, restores npm cache, runs `npm ci`, and validates Docker build with `REACT_APP_MOVIE_API_URL` build arg. |
-| **Backend Continuous Integration** | [`backend-ci.yaml`](.github/workflows/backend-ci.yaml) | `pull_request` on `main` (`starter/backend/**`), `workflow_dispatch` | Python 3.10 setup; `pipenv install --dev`; parallel linting (`pipenv run lint`) & tests (`pipenv run test`); validates Docker build. |
-| **Frontend Continuous Deployment** | [`frontend-cd.yaml`](.github/workflows/frontend-cd.yaml) | `push` on `main` (`starter/frontend/**`), `workflow_dispatch` | Parallel linting & testing; Node 18 setup & `npm ci`; builds Docker image with `REACT_APP_MOVIE_API_URL`; tags with `${{ github.sha }}`; pushes to ECR; deploys to EKS via Kustomize; verifies deployment via `kubectl rollout status` and inspects pods/services. |
-| **Backend Continuous Deployment** | [`backend-cd.yaml`](.github/workflows/backend-cd.yaml) | `push` on `main` (`starter/backend/**`), `workflow_dispatch` | Parallel linting & testing; builds Docker image; tags with `${{ github.sha }}`; pushes to ECR; deploys to EKS via Kustomize; verifies deployment via `kubectl rollout status` and inspects pods/services. |
+| **Frontend Continuous Integration** | [`frontend-ci.yaml`](.github/workflows/frontend-ci.yaml) | `pull_request` on `main` (`starter/frontend/**`), `workflow_dispatch` | Node 18 setup with npm cache restore, linting, and unit tests; no image build |
+| **Backend Continuous Integration** | [`backend-ci.yaml`](.github/workflows/backend-ci.yaml) | `pull_request` on `main` (`starter/backend/**`), `workflow_dispatch` | Python 3.10 setup; `pipenv install --dev`, flake8 linting, pytest unit tests; no image build |
+| **Frontend Continuous Deployment** | [`frontend-cd.yaml`](.github/workflows/frontend-cd.yaml) | `push` on `main` (`starter/frontend/**`), `workflow_dispatch` | Parallel linting & testing; Node 18, npm cache, Docker build & push to ECR, Kustomize deployment to EKS |
+| **Backend Continuous Deployment** | [`backend-cd.yaml`](.github/workflows/backend-cd.yaml) | `push` on `main` (`starter/backend/**`), `workflow_dispatch` | Parallel linting & testing; builds Docker image, pushes to ECR, deploys via Kustomize with rollout verification |
 
 ---
 
-## 📸 Live Deployment Verification & Screenshots
+## Live Deployment Verification & Screenshots
 
 All verification proofs required by the Udacity project review are documented below and located in the [`screenshots/`](screenshots/) directory:
 
 ### 1. Frontend Continuous Integration Pipeline (All Green)
-* **Status:** Passed ✅
+* **Status:** Passed [PASS]
 * **Workflow:** `Frontend Continuous Integration` ([Run #34341158696](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34341158696))
 * **Output:** Successfully executed all required jobs:
   * `Lint Frontend` (parallel)
@@ -63,7 +63,7 @@ All verification proofs required by the Udacity project review are documented be
 ---
 
 ### 2. Backend Continuous Integration Pipeline (All Green)
-* **Status:** Passed ✅
+* **Status:** Passed [PASS]
 * **Workflow:** `Backend Continuous Integration` ([Run #34341160965](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34341160965))
 * **Output:** Successfully executed all required jobs:
   * `Lint Backend` (parallel)
@@ -75,7 +75,7 @@ All verification proofs required by the Udacity project review are documented be
 ---
 
 ### 3. Backend Continuous Deployment Pipeline (All Green)
-* **Status:** Passed ✅
+* **Status:** Passed [PASS]
 * **Workflow:** `Backend Continuous Deployment` ([Run #34339992897](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34339992897))
 * **Output:** Successfully ran all 4 pipeline stages in sequence:
   * `Lint Backend`
@@ -88,7 +88,7 @@ All verification proofs required by the Udacity project review are documented be
 ---
 
 ### 4. Frontend Continuous Deployment Pipeline (All Green)
-* **Status:** Passed ✅
+* **Status:** Passed [PASS]
 * **Workflow:** `Frontend Continuous Deployment` ([Run #34340239839](https://github.com/Krisanth-21/movie-picture-pipeline-cicd/actions/runs/34340239839))
 * **Output:** Successfully ran all 4 pipeline stages in sequence:
   * `Lint Frontend`
@@ -101,7 +101,7 @@ All verification proofs required by the Udacity project review are documented be
 ---
 
 ### 5. Live Backend API Response
-* **Status:** Live & Healthy ✅
+* **Status:** Live & Healthy [PASS]
 * **Endpoint:** `http://a5bbec62a817247eb8dbb5a89cc9d340-503850289.us-east-1.elb.amazonaws.com/movies`
 * **Output:** The Python/Flask container running inside the AWS EKS cluster successfully responds with the movie catalog in JSON format:
 
@@ -114,7 +114,7 @@ All verification proofs required by the Udacity project review are documented be
 ---
 
 ### 6. Live Frontend Web Application
-* **Status:** Live & Healthy ✅
+* **Status:** Live & Healthy [PASS]
 * **Endpoint:** `http://ad123b6ef430d4fccae7ffe1c98d0bc4-43942732.us-east-1.elb.amazonaws.com`
 * **Output:** The React container running inside the AWS EKS cluster renders the **"Movie List"** web page, dynamically pulling and displaying the catalog from the backend API:
 
@@ -122,7 +122,7 @@ All verification proofs required by the Udacity project review are documented be
 
 ---
 
-## ⚙️ Cloud Infrastructure (Terraform)
+## Cloud Infrastructure (Terraform)
 
 All underlying AWS infrastructure was provisioned via Infrastructure as Code using the configuration in [`setup/terraform/`](setup/terraform/):
 * **Networking:** Custom AWS VPC (`10.0.0.0/16`), Public Subnet (`10.0.1.0/24`), Private Subnet (`10.0.2.0/24`), Internet Gateway, and Route Tables.
@@ -133,7 +133,7 @@ All underlying AWS infrastructure was provisioned via Infrastructure as Code usi
 
 ---
 
-## 🧪 Local Testing & Verification Commands
+## Local Testing & Verification Commands
 
 ### Frontend
 ```bash
@@ -177,7 +177,7 @@ FAIL_TEST=true pipenv run test
 
 ---
 
-## 🧹 Teardown & Resource Cleanup
+## Teardown & Resource Cleanup
 
 To prevent cloud billing after project evaluation, all AWS resources can be destroyed by running:
 
@@ -188,5 +188,5 @@ terraform destroy -auto-approve
 
 ---
 
-## 📄 License
+## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
