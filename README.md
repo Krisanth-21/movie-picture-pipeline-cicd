@@ -1,4 +1,4 @@
-# Movie Picture Pipeline — CI/CD Automation
+# Movie Picture Pipeline - CI/CD Automation
 
 This project automates the testing, containerization, and continuous deployment of the **Movie Picture Pipeline** web application using **GitHub Actions**, **Docker**, and **Amazon Web Services (AWS)**.
 
