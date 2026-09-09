@@ -76,6 +76,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tests
+        run: CI=true npm test
+
       - name: Build Docker image
         env:
           REACT_APP_MOVIE_API_URL: ${{ secrets.REACT_APP_MOVIE_API_URL || vars.REACT_APP_MOVIE_API_URL || 'http://localhost:5000' }}
