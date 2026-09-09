@@ -39,10 +39,10 @@ Four distinct workflow files are implemented under [`.github/workflows/`](.githu
 
 | Workflow Name | File | Trigger | Functionality |
 | :--- | :--- | :--- | :--- |
-| **Frontend Continuous Integration** | [`frontend-ci.yaml`](.github/workflows/frontend-ci.yaml) | `pull_request` on `main` (`starter/frontend/**`), `workflow_dispatch` | Node 18 setup with npm caching; parallel linting (`npm run lint`) & tests (`CI=true npm test`); validates Docker build with `REACT_APP_MOVIE_API_URL` build arg. |
+| **Frontend Continuous Integration** | [`frontend-ci.yaml`](.github/workflows/frontend-ci.yaml) | `pull_request` on `main` (`starter/frontend/**`), `workflow_dispatch` | Node 18 setup with npm caching; parallel linting (`npm run lint`) & tests (`CI=true npm test`); build job sets up Node 18, restores npm cache, runs `npm ci`, and validates Docker build with `REACT_APP_MOVIE_API_URL` build arg. |
 | **Backend Continuous Integration** | [`backend-ci.yaml`](.github/workflows/backend-ci.yaml) | `pull_request` on `main` (`starter/backend/**`), `workflow_dispatch` | Python 3.10 setup; `pipenv install --dev`; parallel linting (`pipenv run lint`) & tests (`pipenv run test`); validates Docker build. |
-| **Frontend Continuous Deployment** | [`frontend-cd.yaml`](.github/workflows/frontend-cd.yaml) | `push` on `main` (`starter/frontend/**`), `workflow_dispatch` | Parallel linting & testing; logs into Amazon ECR via `aws-actions/amazon-ecr-login`; builds Docker image with `REACT_APP_MOVIE_API_URL`; tags with `${{ github.sha }}`; pushes to ECR; configures kubectl and deploys to EKS via Kustomize. |
-| **Backend Continuous Deployment** | [`backend-cd.yaml`](.github/workflows/backend-cd.yaml) | `push` on `main` (`starter/backend/**`), `workflow_dispatch` | Parallel linting & testing; logs into Amazon ECR; builds Docker image; tags with `${{ github.sha }}`; pushes to ECR; configures kubectl and deploys to EKS via Kustomize. |
+| **Frontend Continuous Deployment** | [`frontend-cd.yaml`](.github/workflows/frontend-cd.yaml) | `push` on `main` (`starter/frontend/**`), `workflow_dispatch` | Parallel linting & testing; Node 18 setup & `npm ci`; builds Docker image with `REACT_APP_MOVIE_API_URL`; tags with `${{ github.sha }}`; pushes to ECR; deploys to EKS via Kustomize; verifies deployment via `kubectl rollout status` and inspects pods/services. |
+| **Backend Continuous Deployment** | [`backend-cd.yaml`](.github/workflows/backend-cd.yaml) | `push` on `main` (`starter/backend/**`), `workflow_dispatch` | Parallel linting & testing; builds Docker image; tags with `${{ github.sha }}`; pushes to ECR; deploys to EKS via Kustomize; verifies deployment via `kubectl rollout status` and inspects pods/services. |
 
 ---
 
